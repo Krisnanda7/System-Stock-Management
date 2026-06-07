@@ -11,3 +11,38 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("STAFF")
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  nama         String
+  sku          String        @unique
+  kategori     String
+  harga        Float
+  stok         Int           @default(0)
+  stokMinimum  Int           @default(10)
+  satuan       String        @default("pcs")
+  deskripsi    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tipe      String
+  jumlah    Int
+  catatan   String?
+  createdAt DateTime @default(now())
+}
+
