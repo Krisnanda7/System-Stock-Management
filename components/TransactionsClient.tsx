@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Transaction {
@@ -24,7 +24,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
   const selectedProduct = products.find(p => p.id === Number(form.productId));
   const filtered = transactions.filter(t => filter === "SEMUA" ? true : t.tipe === filter);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.productId) return setError("Pilih produk terlebih dahulu");
     setLoading(true); setError(""); setSuccess("");
@@ -39,8 +39,9 @@ export default function TransactionsClient({ initialTransactions, products }: { 
       const updated = await fetch("/api/transactions").then(r => r.json());
       setTransactions(updated);
       router.refresh();
-    } catch (e: any) { setError(e.message); }
-    finally { setLoading(false); }
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Terjadi kesalahan");
+    } finally { setLoading(false); }
   }
 
   return (
@@ -63,8 +64,8 @@ export default function TransactionsClient({ initialTransactions, products }: { 
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Produk</label>
-              <select value={form.productId} onChange={e => setForm({...form, productId: e.target.value})} required className="input-field">
+              <label htmlFor="transaction-product" className="block text-xs font-medium text-gray-600 mb-1">Produk</label>
+              <select id="transaction-product" value={form.productId} onChange={e => setForm({...form, productId: e.target.value})} required className="input-field">
                 <option value="">— Pilih Produk —</option>
                 {products.map(p => <option key={p.id} value={p.id}>{p.nama} (Stok: {p.stok} {p.satuan})</option>)}
               </select>
@@ -75,12 +76,12 @@ export default function TransactionsClient({ initialTransactions, products }: { 
               </div>
             )}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
-              <input type="number" min={1} value={form.jumlah} onChange={e => setForm({...form, jumlah: Number(e.target.value)})} required className="input-field" />
+              <label htmlFor="transaction-amount" className="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
+              <input id="transaction-amount" type="number" min={1} value={form.jumlah} onChange={e => setForm({...form, jumlah: Number(e.target.value)})} required className="input-field" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Catatan (opsional)</label>
-              <textarea value={form.catatan} onChange={e => setForm({...form, catatan: e.target.value})} rows={2} className="input-field resize-none" placeholder="Keterangan tambahan..." />
+              <label htmlFor="transaction-note" className="block text-xs font-medium text-gray-600 mb-1">Catatan (opsional)</label>
+              <textarea id="transaction-note" value={form.catatan} onChange={e => setForm({...form, catatan: e.target.value})} rows={2} className="input-field resize-none" placeholder="Keterangan tambahan..." />
             </div>
             <button type="submit" disabled={loading}
               className={"w-full py-2.5 text-sm font-medium text-white rounded-lg transition " + (form.tipe === "MASUK" ? "bg-green-500 hover:bg-green-600 disabled:opacity-50" : "bg-red-500 hover:bg-red-600 disabled:opacity-50")}>

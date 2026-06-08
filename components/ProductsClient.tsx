@@ -47,7 +47,9 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
       const updated = await fetch("/api/products").then(r => r.json());
       setProducts(updated);
       router.refresh();
-    } catch (e: any) { setError(e.message); }
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Terjadi kesalahan");
+    }
     finally { setLoading(false); }
   }
 
@@ -98,10 +100,10 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
                 </td>
                 <td className="px-5 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition">
+                    <button onClick={() => openEdit(p)} aria-label="Edit produk" className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     </button>
-                    <button onClick={() => setDeleteConfirm(p.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition">
+                    <button onClick={() => setDeleteConfirm(p.id)} aria-label="Hapus produk" className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </div>
@@ -118,21 +120,21 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-semibold text-gray-900">{editProduct ? "Edit Produk" : "Tambah Produk"}</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowModal(false)} aria-label="Tutup" className="text-gray-400 hover:text-gray-600">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <div className="px-6 py-5 space-y-4">
               {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2">{error}</div>}
               <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2"><label className="block text-xs font-medium text-gray-600 mb-1">Nama Produk</label><input type="text" value={form.nama} onChange={e => setForm({...form, nama: e.target.value})} className="input-field" placeholder="Contoh: Kemeja Polos" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">SKU</label><input type="text" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} className="input-field" placeholder="KMJ-001" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">Kategori</label><input type="text" value={form.kategori} onChange={e => setForm({...form, kategori: e.target.value})} className="input-field" placeholder="Pakaian" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">Harga (Rp)</label><input type="number" value={form.harga} onChange={e => setForm({...form, harga: Number(e.target.value)})} className="input-field" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">Satuan</label><input type="text" value={form.satuan} onChange={e => setForm({...form, satuan: e.target.value})} className="input-field" placeholder="pcs" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">Stok Awal</label><input type="number" value={form.stok} onChange={e => setForm({...form, stok: Number(e.target.value)})} className="input-field" /></div>
-                <div><label className="block text-xs font-medium text-gray-600 mb-1">Stok Minimum</label><input type="number" value={form.stokMinimum} onChange={e => setForm({...form, stokMinimum: Number(e.target.value)})} className="input-field" /></div>
-                <div className="col-span-2"><label className="block text-xs font-medium text-gray-600 mb-1">Deskripsi (opsional)</label><textarea value={form.deskripsi} onChange={e => setForm({...form, deskripsi: e.target.value})} className="input-field resize-none" rows={2} /></div>
+                <div className="col-span-2"><label htmlFor="product-name" className="block text-xs font-medium text-gray-600 mb-1">Nama Produk</label><input id="product-name" type="text" value={form.nama} onChange={e => setForm({...form, nama: e.target.value})} className="input-field" placeholder="Contoh: Kemeja Polos" /></div>
+                <div><label htmlFor="product-sku" className="block text-xs font-medium text-gray-600 mb-1">SKU</label><input id="product-sku" type="text" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} className="input-field" placeholder="KMJ-001" /></div>
+                <div><label htmlFor="product-category" className="block text-xs font-medium text-gray-600 mb-1">Kategori</label><input id="product-category" type="text" value={form.kategori} onChange={e => setForm({...form, kategori: e.target.value})} className="input-field" placeholder="Pakaian" /></div>
+                <div><label htmlFor="product-price" className="block text-xs font-medium text-gray-600 mb-1">Harga (Rp)</label><input id="product-price" type="number" value={form.harga} onChange={e => setForm({...form, harga: Number(e.target.value)})} className="input-field" /></div>
+                <div><label htmlFor="product-unit" className="block text-xs font-medium text-gray-600 mb-1">Satuan</label><input id="product-unit" type="text" value={form.satuan} onChange={e => setForm({...form, satuan: e.target.value})} className="input-field" placeholder="pcs" /></div>
+                <div><label htmlFor="product-stock" className="block text-xs font-medium text-gray-600 mb-1">Stok Awal</label><input id="product-stock" type="number" value={form.stok} onChange={e => setForm({...form, stok: Number(e.target.value)})} className="input-field" /></div>
+                <div><label htmlFor="product-min-stock" className="block text-xs font-medium text-gray-600 mb-1">Stok Minimum</label><input id="product-min-stock" type="number" value={form.stokMinimum} onChange={e => setForm({...form, stokMinimum: Number(e.target.value)})} className="input-field" /></div>
+                <div className="col-span-2"><label htmlFor="product-description" className="block text-xs font-medium text-gray-600 mb-1">Deskripsi (opsional)</label><textarea id="product-description" value={form.deskripsi} onChange={e => setForm({...form, deskripsi: e.target.value})} className="input-field resize-none" rows={2} /></div>
               </div>
             </div>
             <div className="flex gap-3 px-6 py-4 border-t border-gray-100">

@@ -1,13 +1,9 @@
 import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: "postgresql://postgres.iisslbxxqdwwdcfwunrz:StokApp2024secure@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres",
-    },
-  },
-});
+const connectionString = process.env.DATABASE_URL ?? "postgresql://postgres.iisslbxxqdwwdcfwunrz:StokApp2024secure@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres";
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
 async function main() {
   const hashed = await bcrypt.hash("admin123", 10);

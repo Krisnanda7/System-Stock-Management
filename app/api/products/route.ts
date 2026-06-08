@@ -17,8 +17,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const product = await prisma.product.create({ data: body });
     return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
-    if (error.code === "P2002") return NextResponse.json({ error: "SKU sudah digunakan" }, { status: 400 });
+  } catch (error: unknown) {
+    const err = error as { code?: string };
+    if (err?.code === "P2002") return NextResponse.json({ error: "SKU sudah digunakan" }, { status: 400 });
     return NextResponse.json({ error: "Gagal membuat produk" }, { status: 500 });
   }
 }
