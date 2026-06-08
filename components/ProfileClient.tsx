@@ -27,6 +27,7 @@ export default function ProfileClient({ user }: { user: User }) {
   const [passLoading, setPassLoading] = useState(false);
   const [passSuccess, setPassSuccess] = useState("");
   const [passError, setPassError] = useState("");
+  const [showPasswords, setShowPasswords] = useState(false);
 
   async function handleInfoSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,7 @@ export default function ProfileClient({ user }: { user: User }) {
     setInfoError("");
 
     try {
-      const res = await fetch("/api/profile", {
+      const res = await fetch("/api/auth/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email }),
@@ -63,7 +64,7 @@ export default function ProfileClient({ user }: { user: User }) {
     }
 
     try {
-      const res = await fetch("/api/profile", {
+      const res = await fetch("/api/auth/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: user.name, email: user.email, currentPassword, newPassword }),
@@ -206,7 +207,7 @@ export default function ProfileClient({ user }: { user: User }) {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">Password Saat Ini</label>
                 <input
-                  type="password"
+                  type={showPasswords ? "text" : "password"}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
@@ -217,7 +218,7 @@ export default function ProfileClient({ user }: { user: User }) {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">Password Baru</label>
                 <input
-                  type="password"
+                  type={showPasswords ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
@@ -229,7 +230,7 @@ export default function ProfileClient({ user }: { user: User }) {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">Konfirmasi Password Baru</label>
                 <input
-                  type="password"
+                  type={showPasswords ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
@@ -240,7 +241,14 @@ export default function ProfileClient({ user }: { user: User }) {
                   <p className="text-xs text-red-500 mt-1">Password tidak cocok</p>
                 )}
               </div>
-              <div className="pt-2">
+              <div className="flex items-center justify-between gap-4 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords((prev) => !prev)}
+                  className="text-xs text-gray-500 hover:text-gray-700 transition"
+                >
+                  {showPasswords ? "Sembunyikan password" : "Tampilkan password"}
+                </button>
                 <button
                   type="submit"
                   disabled={passLoading || newPassword !== confirmPassword}
