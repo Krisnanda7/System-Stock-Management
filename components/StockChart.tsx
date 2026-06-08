@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const data = [
@@ -13,9 +12,6 @@ const data = [
 ];
 
 export default function StockChart() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="h-48 bg-gray-50 animate-pulse rounded-lg" />;
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={data} barSize={10} barGap={4}>
