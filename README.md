@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Klik this for demo krisna-stock.vercel.app/login
+Klik this for demo [krisna-stock.vercel.app/login](https://krisna-stock.vercel.app/)
 
 ## Project Structure
 
