@@ -63,7 +63,7 @@ export default async function ReportsPage() {
             <p className="text-sm text-gray-500">Perbandingan stok masuk dan keluar selama seminggu terakhir.</p>
           </div>
         </div>
-        <div className="h-72">
+        <div className="h-72 print:h-auto print:overflow-visible">
           <StockChart />
         </div>
       </div>
