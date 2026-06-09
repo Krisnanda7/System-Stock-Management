@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ReportClient from "@/components/ReportClient";
+import StockChart from "@/components/StockChart";
 
 function formatTanggal(d: Date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -53,6 +54,18 @@ export default async function ReportsPage() {
             <p className="text-sm text-gray-500 mt-2">{card.description}</p>
           </div>
         ))}
+      </div>
+
+      <div className="rounded-3xl border border-gray-100 bg-white p-6 mb-8 print:border-black/10">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Grafik Aktivitas Stok</h2>
+            <p className="text-sm text-gray-500">Perbandingan stok masuk dan keluar selama seminggu terakhir.</p>
+          </div>
+        </div>
+        <div className="h-72">
+          <StockChart />
+        </div>
       </div>
 
       <section className="space-y-6">
