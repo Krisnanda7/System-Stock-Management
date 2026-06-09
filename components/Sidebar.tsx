@@ -17,6 +17,10 @@ const navLinks = [
     icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>,
   },
   {
+    href: "/reports", label: "Laporan",
+    icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h6v6m-3 4a2 2 0 100-4 2 2 0 000 4zm9-18H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2z" /></svg>,
+  },
+  {
     href: "/profile", label: "Profil",
     icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
   }, 
@@ -29,7 +33,7 @@ const navLinks = [
 export default function Sidebar({ userName, userEmail }: { userName: string; userEmail: string }) {
   const pathname = usePathname();
   return (
-    <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0">
+    <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0 print:hidden">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
         <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
           <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
