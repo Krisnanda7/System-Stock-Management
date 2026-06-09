@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -35,11 +36,7 @@ export default function Sidebar({ userName, userEmail }: { userName: string; use
   return (
     <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0 print:hidden">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
-        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </div>
+          <Image src="/inventory1.png" alt="StokApp" width={100} height={100} />
         <span className="font-semibold text-gray-900 text-sm">StokApp</span>
       </div>
       <nav className="flex-1 p-3 space-y-0.5">
