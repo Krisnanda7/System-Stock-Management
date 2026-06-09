@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Klik this for demo [krisna-stock.vercel.app/login
 
 ## Project Structure
 
