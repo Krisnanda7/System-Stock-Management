@@ -35,8 +35,12 @@ export default function Sidebar({ userName, userEmail }: { userName: string; use
   const pathname = usePathname();
   return (
     <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0 print:hidden">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
-        <Image src="/inventory1.png" alt="StokApp" width={50} height={50} className="w-full h-full object-contain" />
+      <div className="flex flex-col items-center px-5 py-6 border-b border-gray-100">
+        <div className="w-16 h-16 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">
+          <Image src="/inventory1.png" alt="StokApp" width={100} height={100} className="object-contain" />
+        </div>
+        <p className="mt-2 text-sm font-semibold text-gray-900">Stock Management App</p>
+        <p className="text-[10px] text-gray-400 mt-1">Manage inventory effortlessly</p>
       </div>
       <nav className="flex-1 p-3 space-y-0.5">
         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 py-2">Menu</p>
