@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@stokapp.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -61,7 +61,6 @@ export default function LoginPage() {
               {loading ? "Memproses..." : "Masuk"}
             </button>
           </form>
-          <p className="text-slate-500 text-xs text-center mt-6">Demo: admin@stokapp.com / admin123</p>
         </div>
       </div>
     </div>
