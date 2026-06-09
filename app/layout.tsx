@@ -9,7 +9,11 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "StokApp — Manajemen Stok",
   description: "Sistem manajemen stok barang",
+  icons: {
+    icon: "/icon.png"
+  },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
