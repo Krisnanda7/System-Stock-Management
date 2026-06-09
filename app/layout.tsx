@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "StokApp — Manajemen Stok",
   description: "Sistem manajemen stok barang",
   icons: {
-    icon: "/chart.png",
+    icon: "/inventory.png",
   },
 };
 
