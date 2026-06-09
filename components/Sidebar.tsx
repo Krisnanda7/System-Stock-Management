@@ -36,14 +36,7 @@ export default function Sidebar({ userName, userEmail }: { userName: string; use
   return (
     <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0 print:hidden">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
-          <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <div className="w-[100px] h-[100px] bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <div className="w-[84px] h-[84px] rounded-full overflow-hidden">
-                  <Image src="/inventory1.png" alt="StokApp" width={84} height={84} className="w-full h-full object-contain" />
-                </div>
-              </div>
-          </div>
-        <span className="font-semibold text-gray-900 text-sm">StokApp</span>
+        <Image src="/inventory1.png" alt="StokApp" width={50} height={50} className="w-full h-full object-contain" />
       </div>
       <nav className="flex-1 p-3 space-y-0.5">
         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 py-2">Menu</p>
