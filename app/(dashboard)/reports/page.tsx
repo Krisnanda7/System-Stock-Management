@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import ReportClient from "@/components/ReportClient";
 import StockChart from "@/components/StockChart";
+import { buildWeeklyStockChart } from "@/lib/stockChart";
 
 function formatTanggal(d: Date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -11,7 +12,11 @@ function formatTanggal(d: Date) {
 }
 
 export default async function ReportsPage() {
-  const [totalProducts, totalTransactions, masukSum, keluarSum, lowStockProducts, recentTransactions] = await Promise.all([
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const [totalProducts, totalTransactions, masukSum, keluarSum, lowStockProducts, recentTransactions, lastWeekTransactions] = await Promise.all([
     prisma.product.count(),
     prisma.transaction.count(),
     prisma.transaction.aggregate({ where: { tipe: "MASUK" }, _sum: { jumlah: true } }),
@@ -22,11 +27,21 @@ export default async function ReportsPage() {
       orderBy: { createdAt: "desc" },
       include: { product: { select: { nama: true, sku: true } } },
     }),
+    prisma.transaction.findMany({
+      where: { createdAt: { gte: sevenDaysAgo } },
+      orderBy: { createdAt: "asc" },
+      select: { jumlah: true, tipe: true, createdAt: true },
+    }),
   ]);
 
   const totalMasuk = masukSum._sum.jumlah ?? 0;
   const totalKeluar = keluarSum._sum.jumlah ?? 0;
   const lowStockCount = lowStockProducts.length;
+  const chartData = buildWeeklyStockChart(lastWeekTransactions.map((transaction) => ({
+    jumlah: transaction.jumlah,
+    tipe: transaction.tipe,
+    createdAt: transaction.createdAt,
+  })));
 
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 print:p-0 print:border-0 print:shadow-none">
