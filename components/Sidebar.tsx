@@ -36,11 +36,11 @@ export default function Sidebar({ userName, userEmail }: { userName: string; use
   return (
     <aside className="w-60 bg-white border-r border-gray-100 flex flex-col shadow-sm flex-shrink-0 print:hidden">
       <div className="flex flex-col items-center px-5 py-6 border-b border-gray-100">
-        <div className="w-16 h-16 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">
-          <Image src="/inventory1.png" alt="StokApp" width={100} height={100} className="object-contain" />
+        <div className="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
+          <Image src="/inventory1.png" alt="StokApp" width={80} height={80} className="object-contain" />
         </div>
-        <p className="mt-2 text-sm font-semibold text-gray-900">Stock Management App</p>
-        <p className="text-[10px] text-gray-400 mt-1">Manage inventory effortlessly</p>
+        <p className="mt-3 text-sm font-semibold text-gray-900">Stock Management App</p>
+        <p className="text-[11px] text-gray-500 mt-1">Manage inventory effortlessly</p>
       </div>
       <nav className="flex-1 p-3 space-y-0.5">
         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 py-2">Menu</p>
