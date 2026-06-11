@@ -7,8 +7,8 @@ A modern inventory and transaction management dashboard built with Next.js, Pris
 This project helps businesses track products, monitor stock, record transactions, and generate printable reports with charts.
 
 # Acc Demo
-- demo@gmail.com
-- demo123
+- Gmail: demo@gmail.com
+- Password: demo123
 
 <img width="1710" height="1112" alt="Screenshot 2026-06-09 at 15 23 26" src="https://github.com/user-attachments/assets/fb964edf-ab03-42d4-8135-b70b38e53a9e" />
 
