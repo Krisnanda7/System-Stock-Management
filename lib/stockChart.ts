@@ -3,8 +3,6 @@ export type StockChartEntry = {
   masuk: number;
   keluar: number;
   pembelian: number;
-<<<<<<< HEAD
-=======
 };
 
 export type SalesProfitChartEntry = {
@@ -12,7 +10,6 @@ export type SalesProfitChartEntry = {
   pendapatan: number;
   biaya: number;
   laba: number;
->>>>>>> feature
 };
 
 const weekdayFormatter = new Intl.DateTimeFormat("id-ID", { weekday: "short" });
@@ -48,8 +45,6 @@ export function buildWeeklyStockChart(transactions: Array<{ jumlah: number; tipe
   });
 
   return days.map(({ hari, masuk, keluar, pembelian }) => ({ hari, masuk, keluar, pembelian }));
-<<<<<<< HEAD
-=======
 }
 
 export function buildWeeklySalesProfitChart(transactions: Array<{ jumlah: number; tipe: string; harga: number | null; createdAt: Date }>) {
@@ -82,5 +77,4 @@ export function buildWeeklySalesProfitChart(transactions: Array<{ jumlah: number
   });
 
   return days.map(({ hari, pendapatan, biaya }) => ({ hari, pendapatan, biaya, laba: pendapatan - biaya }));
->>>>>>> feature
 }

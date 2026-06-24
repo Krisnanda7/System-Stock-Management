@@ -16,18 +16,9 @@ export default async function ReportsPage() {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
   sevenDaysAgo.setHours(0, 0, 0, 0);
 
-<<<<<<< HEAD
-  const [totalProducts, totalTransactions, masukSum, keluarSum, pembelianSum, lowStockProducts, recentTransactions, lastWeekTransactions] = await Promise.all([
-    prisma.product.count(),
-    prisma.transaction.count(),
-    prisma.transaction.aggregate({ where: { tipe: "MASUK" }, _sum: { jumlah: true } }),
-    prisma.transaction.aggregate({ where: { tipe: "KELUAR" }, _sum: { jumlah: true } }),
-    prisma.transaction.aggregate({ where: { tipe: "PEMBELIAN" }, _sum: { jumlah: true } }),
-=======
   const [totalProducts, totalTransactions, lowStockProducts, recentTransactions, allPurchaseTransactions, lastWeekTransactions] = await Promise.all([
     prisma.product.count(),
     prisma.transaction.count(),
->>>>>>> feature
     prisma.product.findMany({ where: { stok: { lte: 10 } }, orderBy: { stok: "asc" }, take: 10 }),
     prisma.transaction.findMany({
       take: 15,
@@ -38,13 +29,7 @@ export default async function ReportsPage() {
     prisma.transaction.findMany({ where: { createdAt: { gte: sevenDaysAgo } }, orderBy: { createdAt: "asc" }, select: { jumlah: true, tipe: true, createdAt: true } }),
   ]);
 
-<<<<<<< HEAD
-  const totalMasuk = masukSum._sum.jumlah ?? 0;
-  const totalKeluar = keluarSum._sum.jumlah ?? 0;
-  const totalPembelian = pembelianSum._sum.jumlah ?? 0;
-=======
   const totalBiayaPembelian = allPurchaseTransactions.reduce((sum, tx) => sum + (tx.harga ?? 0) * tx.jumlah, 0);
->>>>>>> feature
   const lowStockCount = lowStockProducts.length;
   const chartData = buildWeeklyStockChart(lastWeekTransactions.map((transaction) => ({
     jumlah: transaction.jumlah,
@@ -66,17 +51,11 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5 mb-8">
+      <div className="grid gap-4 md:grid-cols-3 mb-8">
         {[
           { label: "Total Produk", value: totalProducts, description: "Jenis produk terdaftar" },
           { label: "Total Transaksi", value: totalTransactions, description: "Jumlah semua transaksi" },
-<<<<<<< HEAD
-          { label: "Transaksi Pembelian", value: totalPembelian, description: "Total unit pembelian" },
-          { label: "Transaksi Masuk", value: totalMasuk, description: "Total unit masuk" },
-          { label: "Transaksi Keluar", value: totalKeluar, description: "Total unit keluar" },
-=======
           { label: "Total Biaya Pembelian", value: `Rp ${new Intl.NumberFormat("id-ID").format(totalBiayaPembelian)}`, description: "Total biaya pembelian" },
->>>>>>> feature
         ].map((card) => (
           <div key={card.label} className="rounded-3xl border border-gray-100 bg-slate-50 p-5 print:border-black/10 print:bg-white">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">{card.label}</p>
@@ -86,22 +65,9 @@ export default async function ReportsPage() {
         ))}
       </div>
 
-<<<<<<< HEAD
-      <div className="rounded-3xl border border-gray-100 bg-white p-6 mb-8 print:border-black/10">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Grafik Aktivitas Stok</h2>
-            <p className="text-sm text-gray-500">Perbandingan stok masuk dan keluar selama seminggu terakhir.</p>
-          </div>
-        </div>
-        <div className="h-72 print:h-auto print:overflow-visible">
-          <StockChart data={chartData} />
-        </div>
-=======
       <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm mb-8">
         <h2 className="text-sm font-semibold text-gray-900 mb-4">Aktivitas Stok (7 hari)</h2>
         <StockChart data={chartData} />
->>>>>>> feature
       </div>
 
       <section className="space-y-6">
