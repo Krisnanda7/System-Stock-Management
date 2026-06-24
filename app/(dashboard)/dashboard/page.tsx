@@ -96,8 +96,8 @@ export default async function DashboardPage() {
                   <p className="text-xs text-gray-400">{t.product.sku}</p>
                 </td>
                 <td className="px-5 py-3">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${t.tipe === "MASUK" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                    {t.tipe === "MASUK" ? "↑ Masuk" : "↓ Keluar"}
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${t.tipe === "MASUK" ? "bg-green-100 text-green-700" : t.tipe === "KELUAR" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
+                    {t.tipe === "MASUK" ? "↑ Masuk" : t.tipe === "KELUAR" ? "↓ Keluar" : "🛒 Pembelian"}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right font-medium">{t.jumlah}</td>

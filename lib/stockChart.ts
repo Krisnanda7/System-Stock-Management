@@ -5,6 +5,13 @@ export type StockChartEntry = {
   pembelian: number;
 };
 
+export type SalesProfitChartEntry = {
+  hari: string;
+  pendapatan: number;
+  biaya: number;
+  laba: number;
+};
+
 const weekdayFormatter = new Intl.DateTimeFormat("id-ID", { weekday: "short" });
 
 export function buildWeeklyStockChart(transactions: Array<{ jumlah: number; tipe: string; createdAt: Date }>) {
@@ -38,4 +45,36 @@ export function buildWeeklyStockChart(transactions: Array<{ jumlah: number; tipe
   });
 
   return days.map(({ hari, masuk, keluar, pembelian }) => ({ hari, masuk, keluar, pembelian }));
+}
+
+export function buildWeeklySalesProfitChart(transactions: Array<{ jumlah: number; tipe: string; harga: number | null; createdAt: Date }>) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(date.getDate() - (6 - index));
+    return {
+      date,
+      hari: weekdayFormatter.format(date),
+      pendapatan: 0,
+      biaya: 0,
+    };
+  });
+
+  const findBucket = (transactionDate: Date) => {
+    const txDate = new Date(transactionDate);
+    txDate.setHours(0, 0, 0, 0);
+    return days.find((day) => day.date.getTime() === txDate.getTime());
+  };
+
+  transactions.forEach((transaction) => {
+    const bucket = findBucket(new Date(transaction.createdAt));
+    if (!bucket) return;
+    const subtotal = (transaction.harga ?? 0) * transaction.jumlah;
+    if (transaction.tipe === "KELUAR") bucket.pendapatan += subtotal;
+    if (transaction.tipe === "PEMBELIAN") bucket.biaya += subtotal;
+  });
+
+  return days.map(({ hari, pendapatan, biaya }) => ({ hari, pendapatan, biaya, laba: pendapatan - biaya }));
 }

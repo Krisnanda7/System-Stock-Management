@@ -3,10 +3,10 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Transaction {
-  id: number; tipe: string; jumlah: number; catatan: string | null; createdAt: Date;
+  id: number; tipe: string; jumlah: number; harga: number | null; catatan: string | null; createdAt: Date;
   product: { nama: string; sku: string; satuan: string };
 }
-interface Product { id: number; nama: string; sku: string; stok: number; satuan: string; }
+interface Product { id: number; nama: string; sku: string; stok: number; satuan: string; harga: number; }
 
 function formatTanggal(d: Date) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(d));
@@ -15,7 +15,7 @@ function formatTanggal(d: Date) {
 export default function TransactionsClient({ initialTransactions, products }: { initialTransactions: Transaction[]; products: Product[] }) {
   const router = useRouter();
   const [transactions, setTransactions] = useState(initialTransactions);
-  const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
+  const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, harga: "", catatan: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -27,15 +27,20 @@ export default function TransactionsClient({ initialTransactions, products }: { 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.productId) return setError("Pilih produk terlebih dahulu");
+    if ((form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") && (!form.harga || Number(form.harga) <= 0)) {
+      return setError("Masukkan harga per item yang valid");
+    }
     setLoading(true); setError(""); setSuccess("");
     try {
+      const payload: Record<string, unknown> = { productId: Number(form.productId), tipe: form.tipe, jumlah: Number(form.jumlah), catatan: form.catatan || null };
+      if (form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") payload.harga = Number(form.harga);
       const res = await fetch("/api/transactions", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: Number(form.productId), tipe: form.tipe, jumlah: Number(form.jumlah), catatan: form.catatan || null }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Gagal menyimpan"); }
       setSuccess(`Berhasil mencatat stok ${form.tipe.toLowerCase()}!`);
-      setForm({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
+      setForm({ productId: "", tipe: "PEMBELIAN", jumlah: 1, harga: "", catatan: "" });
       const updated = await fetch("/api/transactions").then(r => r.json());
       setTransactions(updated);
       router.refresh();
@@ -86,6 +91,15 @@ export default function TransactionsClient({ initialTransactions, products }: { 
               <label htmlFor="transaction-amount" className="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
               <input id="transaction-amount" type="number" min={1} value={form.jumlah} onChange={e => setForm({...form, jumlah: Number(e.target.value)})} required className="input-field" />
             </div>
+            {(form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") && (
+              <div>
+                <label htmlFor="transaction-price" className="block text-xs font-medium text-gray-600 mb-1">Harga per item</label>
+                <input id="transaction-price" type="number" min={0} step="0.01" value={form.harga} onChange={e => setForm({...form, harga: e.target.value})} required className="input-field" placeholder="Masukkan harga unit" />
+                {selectedProduct && form.tipe === "KELUAR" && (
+                  <p className="mt-2 text-xs text-gray-500">Harga default produk: Rp {new Intl.NumberFormat("id-ID").format(selectedProduct.harga)}</p>
+                )}
+              </div>
+            )}
             <div>
               <label htmlFor="transaction-note" className="block text-xs font-medium text-gray-600 mb-1">Catatan (opsional)</label>
               <textarea id="transaction-note" value={form.catatan} onChange={e => setForm({...form, catatan: e.target.value})} rows={2} className="input-field resize-none" placeholder="Keterangan tambahan..." />
@@ -120,12 +134,13 @@ export default function TransactionsClient({ initialTransactions, products }: { 
                 <th className="text-left px-5 py-3 font-medium">Produk</th>
                 <th className="text-left px-5 py-3 font-medium">Tipe</th>
                 <th className="text-right px-5 py-3 font-medium">Jumlah</th>
+                <th className="text-right px-5 py-3 font-medium">Harga</th>
                 <th className="text-left px-5 py-3 font-medium">Catatan</th>
                 <th className="text-right px-5 py-3 font-medium">Waktu</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 text-sm">Belum ada transaksi</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={6} className="text-center py-10 text-gray-400 text-sm">Belum ada transaksi</td></tr>}
               {filtered.map(t => (
                 <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
                   <td className="px-5 py-3"><p className="font-medium text-gray-900">{t.product.nama}</p><p className="text-xs text-gray-400">{t.product.sku}</p></td>
@@ -140,6 +155,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right font-semibold text-gray-900">{t.jumlah} <span className="text-xs font-normal text-gray-400">{t.product.satuan}</span></td>
+                  <td className="px-5 py-3 text-right font-semibold text-gray-900">{t.harga != null ? `Rp ${new Intl.NumberFormat("id-ID").format(t.harga)}` : "—"}</td>
                   <td className="px-5 py-3 text-gray-500 text-xs">{t.catatan || "—"}</td>
                   <td className="px-5 py-3 text-right text-xs text-gray-400">{formatTanggal(t.createdAt)}</td>
                 </tr>
