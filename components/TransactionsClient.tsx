@@ -17,6 +17,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
   const [transactions, setTransactions] = useState(initialTransactions);
   const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [filter, setFilter] = useState("SEMUA");
@@ -43,6 +44,27 @@ export default function TransactionsClient({ initialTransactions, products }: { 
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Terjadi kesalahan");
     } finally { setLoading(false); }
+  }
+
+  async function handleRemove(id: number) {
+    const confirmRemove = window.confirm("Hapus transaksi ini dan sesuaikan stok secara otomatis?");
+    if (!confirmRemove) return;
+    setDeletingId(id);
+    setError("");
+    setSuccess("");
+    try {
+      const res = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error || "Gagal menghapus transaksi");
+      }
+      setTransactions(current => current.filter(tx => tx.id !== id));
+      setSuccess("Transaksi berhasil dihapus dan stok disesuaikan.");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Terjadi kesalahan saat menghapus");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   return (
@@ -130,6 +152,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
                 <th className="text-right px-5 py-3 font-medium">Harga</th>
                 <th className="text-left px-5 py-3 font-medium">Catatan</th>
                 <th className="text-right px-5 py-3 font-medium">Waktu</th>
+                <th className="text-right px-5 py-3 font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -151,6 +174,13 @@ export default function TransactionsClient({ initialTransactions, products }: { 
                   <td className="px-5 py-3 text-right font-semibold text-gray-900">{t.harga != null ? `Rp ${new Intl.NumberFormat("id-ID").format(t.harga)}` : "—"}</td>
                   <td className="px-5 py-3 text-gray-500 text-xs">{t.catatan || "—"}</td>
                   <td className="px-5 py-3 text-right text-xs text-gray-400">{formatTanggal(t.createdAt)}</td>
+                  <td className="px-5 py-3 text-right">
+                    <button type="button" onClick={() => handleRemove(t.id)}
+                      disabled={deletingId === t.id}
+                      className="text-xs text-red-600 hover:text-red-800 disabled:text-gray-400">
+                      {deletingId === t.id ? "Menghapus..." : "Hapus"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

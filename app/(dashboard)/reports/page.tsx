@@ -74,26 +74,15 @@ export default async function ReportsPage() {
         ))}
       </div>
 
-      <div className="rounded-3xl border border-gray-100 bg-white p-6 mb-8 print:border-black/10">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Grafik Aktivitas Stok</h2>
-            <p className="text-sm text-gray-500">Perbandingan stok masuk dan keluar selama seminggu terakhir.</p>
-          </div>
-        </div>
-        <div className="h-72 print:h-auto print:overflow-visible">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">Aktivitas Stok (7 hari)</h2>
           <StockChart data={chartData} />
         </div>
-      </div>
 
-      <div className="rounded-3xl border border-gray-100 bg-white p-6 mb-8 print:border-black/10">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Grafik Penjualan & Laba</h2>
-            <p className="text-sm text-gray-500">Pendapatan dan biaya pembelian mingguan bersama laba bersih.</p>
-          </div>
-        </div>
-        <div className="h-80 print:h-auto print:overflow-visible">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">Pendapatan & Laba</h2>
+          <p className="text-sm text-gray-500 mb-4">Pendapatan dan biaya pembelian mingguan bersama laba bersih.</p>
           <SalesProfitChart data={salesProfitChartData} />
         </div>
       </div>
