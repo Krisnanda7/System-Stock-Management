@@ -15,7 +15,7 @@ function formatTanggal(d: Date) {
 export default function TransactionsClient({ initialTransactions, products }: { initialTransactions: Transaction[]; products: Product[] }) {
   const router = useRouter();
   const [transactions, setTransactions] = useState(initialTransactions);
-  const [form, setForm] = useState({ productId: "", tipe: "MASUK", jumlah: 1, catatan: "" });
+  const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -35,7 +35,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Gagal menyimpan"); }
       setSuccess(`Berhasil mencatat stok ${form.tipe.toLowerCase()}!`);
-      setForm({ productId: "", tipe: "MASUK", jumlah: 1, catatan: "" });
+      setForm({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
       const updated = await fetch("/api/transactions").then(r => r.json());
       setTransactions(updated);
       router.refresh();
@@ -54,11 +54,18 @@ export default function TransactionsClient({ initialTransactions, products }: { 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-2">Tipe Transaksi</label>
-              <div className="grid grid-cols-2 gap-2">
-                {["MASUK", "KELUAR"].map(t => (
-                  <button key={t} type="button" onClick={() => setForm({...form, tipe: t})}
-                    className={"py-2.5 rounded-lg text-sm font-medium transition border " + (form.tipe === t ? (t === "MASUK" ? "bg-green-500 text-white border-green-500" : "bg-red-500 text-white border-red-500") : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50")}>
-                    {t === "MASUK" ? "↑ Stok Masuk" : "↓ Stok Keluar"}
+              <div className="grid grid-cols-3 gap-2">
+                {["PEMBELIAN", "MASUK", "KELUAR"].map((t) => (
+                  <button key={t} type="button" onClick={() => setForm({ ...form, tipe: t })}
+                    className={"py-2.5 rounded-lg text-sm font-medium transition border " +
+                      (form.tipe === t
+                        ? t === "MASUK"
+                          ? "bg-green-500 text-white border-green-500"
+                          : t === "KELUAR"
+                            ? "bg-red-500 text-white border-red-500"
+                            : "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50")}>
+                    {t === "MASUK" ? "↑ Stok Masuk" : t === "KELUAR" ? "↓ Stok Keluar" : "🛒 Pembelian"}
                   </button>
                 ))}
               </div>
@@ -84,8 +91,11 @@ export default function TransactionsClient({ initialTransactions, products }: { 
               <textarea id="transaction-note" value={form.catatan} onChange={e => setForm({...form, catatan: e.target.value})} rows={2} className="input-field resize-none" placeholder="Keterangan tambahan..." />
             </div>
             <button type="submit" disabled={loading}
-              className={"w-full py-2.5 text-sm font-medium text-white rounded-lg transition " + (form.tipe === "MASUK" ? "bg-green-500 hover:bg-green-600 disabled:opacity-50" : "bg-red-500 hover:bg-red-600 disabled:opacity-50")}>
-              {loading ? "Menyimpan..." : `Simpan ${form.tipe === "MASUK" ? "Stok Masuk" : "Stok Keluar"}`}
+              className={"w-full py-2.5 text-sm font-medium text-white rounded-lg transition " +
+                (form.tipe === "MASUK" || form.tipe === "PEMBELIAN"
+                  ? "bg-green-500 hover:bg-green-600 disabled:opacity-50"
+                  : "bg-red-500 hover:bg-red-600 disabled:opacity-50")}>
+              {loading ? "Menyimpan..." : `Simpan ${form.tipe === "MASUK" ? "Stok Masuk" : form.tipe === "KELUAR" ? "Stok Keluar" : "Pembelian"}`}
             </button>
           </form>
         </div>
@@ -96,7 +106,7 @@ export default function TransactionsClient({ initialTransactions, products }: { 
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-semibold text-gray-900">Riwayat Transaksi</h2>
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-              {["SEMUA", "MASUK", "KELUAR"].map(f => (
+              {["SEMUA", "PEMBELIAN", "MASUK", "KELUAR"].map((f) => (
                 <button key={f} onClick={() => setFilter(f)}
                   className={"text-xs px-3 py-1.5 rounded-md font-medium transition " + (filter === f ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>
                   {f}
@@ -120,8 +130,13 @@ export default function TransactionsClient({ initialTransactions, products }: { 
                 <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
                   <td className="px-5 py-3"><p className="font-medium text-gray-900">{t.product.nama}</p><p className="text-xs text-gray-400">{t.product.sku}</p></td>
                   <td className="px-5 py-3">
-                    <span className={"inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium " + (t.tipe === "MASUK" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
-                      {t.tipe === "MASUK" ? "↑" : "↓"} {t.tipe}
+                    <span className={"inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium " +
+                      (t.tipe === "MASUK"
+                        ? "bg-green-100 text-green-700"
+                        : t.tipe === "KELUAR"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-blue-100 text-blue-700")}>
+                      {t.tipe === "MASUK" ? "↑" : t.tipe === "KELUAR" ? "↓" : "🛒"} {t.tipe}
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right font-semibold text-gray-900">{t.jumlah} <span className="text-xs font-normal text-gray-400">{t.product.satuan}</span></td>
