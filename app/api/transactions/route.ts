@@ -19,14 +19,14 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const { productId, tipe, jumlah, catatan } = await req.json();
-    if (!["MASUK", "KELUAR"].includes(tipe)) return NextResponse.json({ error: "Tipe tidak valid" }, { status: 400 });
+    if (!["PEMBELIAN", "MASUK", "KELUAR"].includes(tipe)) return NextResponse.json({ error: "Tipe tidak valid" }, { status: 400 });
     if (tipe === "KELUAR") {
       const product = await prisma.product.findUnique({ where: { id: productId } });
       if (!product || product.stok < jumlah) return NextResponse.json({ error: "Stok tidak mencukupi" }, { status: 400 });
     }
     const [transaction] = await prisma.$transaction([
       prisma.transaction.create({ data: { productId, tipe, jumlah, catatan } }),
-      prisma.product.update({ where: { id: productId }, data: { stok: { increment: tipe === "MASUK" ? jumlah : -jumlah } } }),
+      prisma.product.update({ where: { id: productId }, data: { stok: { increment: tipe === "KELUAR" ? -jumlah : jumlah } } }),
     ]);
     return NextResponse.json(transaction, { status: 201 });
   } catch {

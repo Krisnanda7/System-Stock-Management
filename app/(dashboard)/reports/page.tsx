@@ -16,11 +16,12 @@ export default async function ReportsPage() {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
   sevenDaysAgo.setHours(0, 0, 0, 0);
 
-  const [totalProducts, totalTransactions, masukSum, keluarSum, lowStockProducts, recentTransactions, lastWeekTransactions] = await Promise.all([
+  const [totalProducts, totalTransactions, masukSum, keluarSum, pembelianSum, lowStockProducts, recentTransactions, lastWeekTransactions] = await Promise.all([
     prisma.product.count(),
     prisma.transaction.count(),
     prisma.transaction.aggregate({ where: { tipe: "MASUK" }, _sum: { jumlah: true } }),
     prisma.transaction.aggregate({ where: { tipe: "KELUAR" }, _sum: { jumlah: true } }),
+    prisma.transaction.aggregate({ where: { tipe: "PEMBELIAN" }, _sum: { jumlah: true } }),
     prisma.product.findMany({ where: { stok: { lte: 10 } }, orderBy: { stok: "asc" }, take: 10 }),
     prisma.transaction.findMany({
       take: 15,
@@ -36,6 +37,7 @@ export default async function ReportsPage() {
 
   const totalMasuk = masukSum._sum.jumlah ?? 0;
   const totalKeluar = keluarSum._sum.jumlah ?? 0;
+  const totalPembelian = pembelianSum._sum.jumlah ?? 0;
   const lowStockCount = lowStockProducts.length;
   const chartData = buildWeeklyStockChart(lastWeekTransactions.map((transaction) => ({
     jumlah: transaction.jumlah,
@@ -57,9 +59,10 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 mb-8">
+      <div className="grid gap-4 md:grid-cols-4 mb-8">
         {[
           { label: "Total Produk", value: totalProducts, description: "Jenis produk terdaftar" },
+          { label: "Transaksi Pembelian", value: totalPembelian, description: "Total unit pembelian" },
           { label: "Transaksi Masuk", value: totalMasuk, description: "Total unit masuk" },
           { label: "Transaksi Keluar", value: totalKeluar, description: "Total unit keluar" },
         ].map((card) => (
@@ -79,7 +82,7 @@ export default async function ReportsPage() {
           </div>
         </div>
         <div className="h-72 print:h-auto print:overflow-visible">
-          <StockChart />
+          <StockChart data={chartData} />
         </div>
       </div>
 

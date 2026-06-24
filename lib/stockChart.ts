@@ -2,6 +2,7 @@ export type StockChartEntry = {
   hari: string;
   masuk: number;
   keluar: number;
+  pembelian: number;
 };
 
 const weekdayFormatter = new Intl.DateTimeFormat("id-ID", { weekday: "short" });
@@ -18,6 +19,7 @@ export function buildWeeklyStockChart(transactions: Array<{ jumlah: number; tipe
       hari: weekdayFormatter.format(date),
       masuk: 0,
       keluar: 0,
+      pembelian: 0,
     };
   });
 
@@ -32,7 +34,8 @@ export function buildWeeklyStockChart(transactions: Array<{ jumlah: number; tipe
     if (!bucket) return;
     if (transaction.tipe === "MASUK") bucket.masuk += transaction.jumlah;
     if (transaction.tipe === "KELUAR") bucket.keluar += transaction.jumlah;
+    if (transaction.tipe === "PEMBELIAN") bucket.pembelian += transaction.jumlah;
   });
 
-  return days.map(({ hari, masuk, keluar }) => ({ hari, masuk, keluar }));
+  return days.map(({ hari, masuk, keluar, pembelian }) => ({ hari, masuk, keluar, pembelian }));
 }
