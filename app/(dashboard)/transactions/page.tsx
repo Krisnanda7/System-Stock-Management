@@ -9,7 +9,7 @@ export default async function TransactionsPage() {
       take: 100,
     }),
     prisma.product.findMany({
-      select: { id: true, nama: true, sku: true, stok: true, satuan: true },
+      select: { id: true, nama: true, sku: true, stok: true, satuan: true, harga: true },
       orderBy: { nama: "asc" },
     }),
   ]);
@@ -18,7 +18,7 @@ export default async function TransactionsPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-gray-900">Transaksi</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Catat stok masuk dan stok keluar</p>
+        <p className="text-sm text-gray-500 mt-0.5">Catat stok masuk, pembelian, dan penjualan.</p>
       </div>
       <TransactionsClient initialTransactions={transactions} products={products} />
     </div>

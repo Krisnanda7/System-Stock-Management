@@ -42,6 +42,7 @@ model Transaction {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   tipe      String
   jumlah    Int
+  harga     Float?
   catatan   String?
   createdAt DateTime @default(now())
 }
