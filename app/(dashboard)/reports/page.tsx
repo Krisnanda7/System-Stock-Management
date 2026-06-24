@@ -59,9 +59,10 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4 mb-8">
+      <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5 mb-8">
         {[
           { label: "Total Produk", value: totalProducts, description: "Jenis produk terdaftar" },
+          { label: "Total Transaksi", value: totalTransactions, description: "Jumlah semua transaksi" },
           { label: "Transaksi Pembelian", value: totalPembelian, description: "Total unit pembelian" },
           { label: "Transaksi Masuk", value: totalMasuk, description: "Total unit masuk" },
           { label: "Transaksi Keluar", value: totalKeluar, description: "Total unit keluar" },
