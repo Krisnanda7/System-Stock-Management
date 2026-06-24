@@ -15,7 +15,7 @@ function formatTanggal(d: Date) {
 export default function TransactionsClient({ initialTransactions, products }: { initialTransactions: Transaction[]; products: Product[] }) {
   const router = useRouter();
   const [transactions, setTransactions] = useState(initialTransactions);
-  const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, harga: "", catatan: "" });
+  const [form, setForm] = useState({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -27,20 +27,16 @@ export default function TransactionsClient({ initialTransactions, products }: { 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.productId) return setError("Pilih produk terlebih dahulu");
-    if ((form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") && (!form.harga || Number(form.harga) <= 0)) {
-      return setError("Masukkan harga per item yang valid");
-    }
     setLoading(true); setError(""); setSuccess("");
     try {
       const payload: Record<string, unknown> = { productId: Number(form.productId), tipe: form.tipe, jumlah: Number(form.jumlah), catatan: form.catatan || null };
-      if (form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") payload.harga = Number(form.harga);
       const res = await fetch("/api/transactions", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Gagal menyimpan"); }
       setSuccess(`Berhasil mencatat stok ${form.tipe.toLowerCase()}!`);
-      setForm({ productId: "", tipe: "PEMBELIAN", jumlah: 1, harga: "", catatan: "" });
+      setForm({ productId: "", tipe: "PEMBELIAN", jumlah: 1, catatan: "" });
       const updated = await fetch("/api/transactions").then(r => r.json());
       setTransactions(updated);
       router.refresh();
@@ -91,13 +87,10 @@ export default function TransactionsClient({ initialTransactions, products }: { 
               <label htmlFor="transaction-amount" className="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
               <input id="transaction-amount" type="number" min={1} value={form.jumlah} onChange={e => setForm({...form, jumlah: Number(e.target.value)})} required className="input-field" />
             </div>
-            {(form.tipe === "PEMBELIAN" || form.tipe === "KELUAR") && (
-              <div>
-                <label htmlFor="transaction-price" className="block text-xs font-medium text-gray-600 mb-1">Harga per item</label>
-                <input id="transaction-price" type="number" min={0} step="0.01" value={form.harga} onChange={e => setForm({...form, harga: e.target.value})} required className="input-field" placeholder="Masukkan harga unit" />
-                {selectedProduct && form.tipe === "KELUAR" && (
-                  <p className="mt-2 text-xs text-gray-500">Harga default produk: Rp {new Intl.NumberFormat("id-ID").format(selectedProduct.harga)}</p>
-                )}
+            {selectedProduct && form.tipe !== "MASUK" && (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-600">
+                Harga per item akan otomatis menggunakan harga produk saat ini:
+                <div className="mt-2 font-semibold text-gray-900">Rp {new Intl.NumberFormat("id-ID").format(selectedProduct.harga)}</div>
               </div>
             )}
             <div>
